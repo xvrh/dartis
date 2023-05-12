@@ -20,10 +20,10 @@ abstract class Converter<S, T> {
   T? convert(S value, RedisCodec codec);
 
   /// Checks if this can converts a [value] into an instance of type [U].
-  bool supports<U>(Object? value) =>
+  bool supports<U extends Object>(Object? value) =>
       value != null &&
       value is S &&
-      (U == targetType || U.toString() == '${targetType.toString()}?');
+      (U == targetType || U.toString() == '${targetType.toString()}');
 }
 
 /// A converter that converts an instance of type [S] into a list of bytes.
@@ -36,13 +36,14 @@ abstract class Encoder<S> extends Converter<S, List<int>> {}
 /// Extend from this class for building your own decoders.
 abstract class Decoder<S extends Reply?, T> extends Converter<S, T> {}
 
-abstract class ArrayDecoder<S extends Reply?, T>
+abstract class ArrayDecoder<S extends Reply?, T extends Object>
     extends Converter<S, List<T?>> {
-  @override
-
   /// Checks if this can converts a [value] into an instance of type [List<U>].
-  bool supports<U>(Object? value) =>
-      value != null && value is S && U.toString() == 'List<$T>';
+  @override
+  bool supports<U extends Object>(Object? value) {
+    print("Check list ${U} vs $T");
+    return value != null && value is S && U.toString() == 'List<$T>';
+  }
 }
 
 /// A generic converter that encodes instances of any type to lists of bytes
@@ -72,10 +73,11 @@ class RedisCodec {
   }
 
   /// Converts a [value] of any type into an instance of type [T].
-  T? encode<T>(Object? value) => _encoder.convert<T>(value, this);
+  T? encode<T extends Object>(Object? value) =>
+      _encoder.convert<T>(value, this);
 
   /// Converts a [value] of any type into an instance of type [T].
-  T? decode<T>(Object value) => _decoder.convert<T>(value, this);
+  T? decode<T extends Object>(Object value) => _decoder.convert<T>(value, this);
 }
 
 /// A converter that converts instances of multiple types.
@@ -89,6 +91,7 @@ abstract class _MultiConverter {
   void register(Converter<Object?, Object?> converter) {
     log.fine(() => 'Registering converter: $converter.');
 
+    "";
     _converters
       ..removeWhere((c) =>
           c.sourceType == converter.sourceType &&
@@ -97,13 +100,16 @@ abstract class _MultiConverter {
   }
 
   /// Converts a [value] of any type into an instance of type [T].
-  T? convert<T>(Object? value, RedisCodec codec) {
+  T? convert<T extends Object>(Object? value, RedisCodec codec) {
     for (final converter in _converters) {
       if (converter.supports<T>(value)) {
-        return converter.convert(value, codec) as T?;
+        var converted = converter.convert(value, codec);
+        return converted as T?;
       }
     }
 
+    "";
+    //return value as T;
     throw RedisException('Unexpected value of type "${value.runtimeType}".');
   }
 }
@@ -133,6 +139,10 @@ class _Decoder extends _MultiConverter {
     register(_ArrayReplyDecoder<String>());
     register(_ArrayReplyDecoder<int>());
     register(_ArrayReplyDecoder<double>());
+    register(_NullableArrayReplyDecoder<List<int>>());
+    register(_NullableArrayReplyDecoder<String>());
+    register(_NullableArrayReplyDecoder<int>());
+    register(_NullableArrayReplyDecoder<double>());
   }
 }
 
@@ -203,7 +213,6 @@ class _DoubleReplyDecoder extends Decoder<SingleReply?, double> {
   @override
   double? convert(SingleReply? value, RedisCodec codec) {
     if (value!.bytes == null) {
-      // ignore: avoid_returning_null
       return null;
     }
 
@@ -222,9 +231,24 @@ class _DoubleReplyDecoder extends Decoder<SingleReply?, double> {
 
 /// A decoder that converts an array of server replies into a list of
 /// instances of type [T].
-class _ArrayReplyDecoder<T> extends ArrayDecoder<ArrayReply?, T> {
+class _ArrayReplyDecoder<T extends Object>
+    extends ArrayDecoder<ArrayReply?, T> {
+  @override
+  List<T>? convert(ArrayReply? value, RedisCodec codec) => value!.array == null
+      ? null
+      : value.array!.map((reply) => codec.decode<T>(reply)!).toList();
+}
+
+class _NullableArrayReplyDecoder<T extends Object>
+    extends ArrayDecoder<ArrayReply?, T> {
   @override
   List<T?>? convert(ArrayReply? value, RedisCodec codec) => value!.array == null
       ? null
       : value.array!.map((reply) => codec.decode<T>(reply)).toList();
+
+  @override
+  bool supports<U extends Object>(Object? value) {
+    print("Check 1 $U");
+    return value != null && value is ArrayReply? && U.toString() == 'List<$T?>';
+  }
 }

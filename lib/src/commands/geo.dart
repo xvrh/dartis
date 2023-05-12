@@ -214,7 +214,8 @@ class GeoPositionMapper implements Mapper<List<GeoPosition?>> {
 }
 
 /// A mapper to be used with the GEORADIUS family commands.
-class GeoRadiusMapper<V> implements Mapper<List<GeoradiusResult<V>>> {
+class GeoRadiusMapper<V extends Object>
+    implements Mapper<List<GeoradiusResult<V>>> {
   /// Return the distance of the returned items from the specified center.
   final bool withCoord;
 
@@ -281,7 +282,7 @@ class GeoRadiusMapper<V> implements Mapper<List<GeoradiusResult<V>>> {
 }
 
 /// A mapper to be used with the GEORADIUS family commands.
-class GeoRadiusStoreMapper implements Mapper<int?> {
+class GeoRadiusStoreMapper implements Mapper<int> {
   /// Creates a [GeoRadiusStoreMapper] instance.
   const GeoRadiusStoreMapper();
 

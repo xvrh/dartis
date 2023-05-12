@@ -1,9 +1,8 @@
 // Copyright (c) 2018, Juan Mellado. All rights reserved. Use of this source
 // is governed by a MIT-style license that can be found in the LICENSE file.
 
-import 'dart:io' show BytesBuilder;
 import 'dart:math' show min, max;
-import 'dart:typed_data' show Uint8List;
+import 'dart:typed_data' show BytesBuilder, Uint8List;
 
 import '../exception.dart';
 import 'reply.dart';

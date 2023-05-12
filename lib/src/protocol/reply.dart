@@ -34,25 +34,27 @@ class NullReply extends SingleReply {
 /// RESP simple string.
 class StringReply extends SingleReply {
   /// Creates a [StringReply] instance.
-  const StringReply(List<int>? bytes) : super(bytes);
+  const StringReply(super.bytes);
 
   @override
-  String toString() => 'StringReply: "${String.fromCharCodes(bytes!)}"';
+  String toString() =>
+      'StringReply: "${bytes != null ? String.fromCharCodes(bytes!) : null}"';
 }
 
 /// RESP integer.
 class IntReply extends SingleReply {
   /// Creates an [IntReply] instance.
-  const IntReply(List<int>? bytes) : super(bytes);
+  const IntReply(super.bytes);
 
   @override
-  String toString() => 'IntReply: ${int.parse(String.fromCharCodes(bytes!))}';
+  String toString() =>
+      'IntReply: ${bytes != null ? int.parse(String.fromCharCodes(bytes!)) : null}';
 }
 
 /// RESP bulk string.
 class BulkReply extends SingleReply {
   /// Creates a [BulkReply] instance.
-  const BulkReply(List<int>? bytes) : super(bytes);
+  const BulkReply(super.bytes);
 
   @override
   String toString() => 'BulkReply: $bytes';
@@ -76,8 +78,9 @@ class ArrayReply implements Reply {
 /// RESP error.
 class ErrorReply extends SingleReply {
   /// Creates an [ErrorReply] instance.
-  const ErrorReply(List<int>? bytes) : super(bytes);
+  const ErrorReply(super.bytes);
 
   @override
-  String toString() => 'ErrorReply: "${String.fromCharCodes(bytes!)}"';
+  String toString() =>
+      'ErrorReply: "${bytes != null ? String.fromCharCodes(bytes!) : null}"';
 }

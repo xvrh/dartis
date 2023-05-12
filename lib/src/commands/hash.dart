@@ -64,7 +64,7 @@ abstract class HashCommands<K, V> {
   /// stored at [key].
   ///
   /// See https://redis.io/commands/hmget
-  Future<List<V?>?> hmget(K key, {K? field, Iterable<K> fields = const []});
+  Future<List<V?>> hmget(K key, {K? field, Iterable<K> fields = const []});
 
   /// Sets the specified fields to their respective values in the hash
   /// stored at [key].
@@ -124,7 +124,8 @@ class HashScanResult<K, V> {
 }
 
 /// A mapper for the HSCAN command.
-class HashScanMapper<K, V> implements Mapper<HashScanResult<K, V?>> {
+class HashScanMapper<K extends Object, V extends Object>
+    implements Mapper<HashScanResult<K, V?>> {
   @override
   HashScanResult<K, V?> map(covariant ArrayReply reply, RedisCodec codec) {
     final cursor = codec.decode<int>(reply.array![0]);
@@ -151,7 +152,8 @@ class HashScanMapper<K, V> implements Mapper<HashScanResult<K, V?>> {
 }
 
 /// A mapper for the HGETALL command.
-class HashMapper<K, V> implements Mapper<Map<K, V?>> {
+class HashMapper<K extends Object, V extends Object>
+    implements Mapper<Map<K, V?>> {
   @override
   Map<K, V?> map(covariant ArrayReply reply, RedisCodec codec) {
     // ignore: prefer_collection_literals

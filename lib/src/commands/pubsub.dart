@@ -56,7 +56,8 @@ class PubsubResult<K> {
 }
 
 /// A mapper for the PUBSUB NUMSUB command.
-class PubsubResultMapper<K> implements Mapper<List<PubsubResult<K?>>> {
+class PubsubResultMapper<K extends Object>
+    implements Mapper<List<PubsubResult<K?>>> {
   @override
   List<PubsubResult<K?>> map(covariant ArrayReply reply, RedisCodec codec) {
     final List<PubsubResult<K?>> results = <PubsubResult<K>>[];

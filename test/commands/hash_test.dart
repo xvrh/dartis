@@ -167,6 +167,10 @@ void main() {
       // Try to get a non existing field.
       expect(await commands.hmget(key1, field: 'sons'), equals([null]));
 
+      // Try to get a non existing key.
+      expect(() => commands.hmget('notakey'),
+          throwsA(const TypeMatcher<RedisException>()));
+
       // Try to get from an empty or non existing hash.
       final key2 = uuid();
       expect(await commands.hmget(key2, field: 'name'), equals([null]));

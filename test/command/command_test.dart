@@ -1,8 +1,6 @@
 // Copyright (c) 2018, Juan Mellado. All rights reserved. Use of this source
 // is governed by a MIT-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:test/test.dart';
 
 // ignore: directives_ordering
@@ -11,7 +9,7 @@ import 'package:dartis/dartis.dart';
 class _ReverseMapper implements Mapper<String> {
   @override
   String map(covariant StringReply reply, RedisCodec codec) =>
-      String.fromCharCodes(reply.bytes.reversed);
+      String.fromCharCodes(reply.bytes!.reversed);
 }
 
 void main() {
@@ -32,7 +30,7 @@ void main() {
       });
 
       test('with some null values', () {
-        final command = Command<String>(<Object>['PING', null]);
+        final command = Command<String>(['PING', null]);
         expect(command.line.toList(), equals(['PING']));
       });
     });
@@ -48,7 +46,7 @@ void main() {
       });
 
       test('with void', () {
-        final command = Command<void>(<Object>['CMD']);
+        final command = Command(<Object>['CMD']);
 
         final reply = StringReply('PONG'.codeUnits);
         command.complete(reply, codec);

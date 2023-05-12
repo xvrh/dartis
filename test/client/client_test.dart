@@ -1,8 +1,6 @@
 // Copyright (c) 2018, Juan Mellado. All rights reserved. Use of this source
 // is governed by a MIT-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async' show Future;
 import 'dart:io' show SocketException;
 
@@ -75,8 +73,7 @@ void main() {
       // Flush.
       final futures = client.flush();
 
-      expect(
-          await Future.wait<Object>(futures), equals(['PONG', 'PONG', 'PONG']));
+      expect(await Future.wait(futures), equals(['PONG', 'PONG', 'PONG']));
 
       await client.disconnect();
     });

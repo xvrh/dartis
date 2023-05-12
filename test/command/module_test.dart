@@ -1,8 +1,6 @@
 // Copyright (c) 2018, Juan Mellado. All rights reserved. Use of this source
 // is governed by a MIT-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async' show Future;
 
 import 'package:test/test.dart';
@@ -14,7 +12,7 @@ import '../util.dart' show uuid;
 
 class _DummyRunner implements CommandRunner {
   @override
-  Future<T> run<T>(Command<T> command) => command.future;
+  Future<T?> run<T extends Object>(Command<T> command) => command.future;
 }
 
 class _DummyModule extends ModuleBase {
@@ -24,17 +22,16 @@ class _DummyModule extends ModuleBase {
 class _TypedCommands<K> extends ModuleBase {
   _TypedCommands(Client client) : super(client);
 
-  Future<void> set<R>(K key, R value) =>
-      run<void>(<Object>[r'SET', key, value]);
+  Future<void> set<R>(K key, R value) => run([r'SET', key, value]);
 
-  Future<R> get<R>(K key) => run<R>(<Object>[r'GET', key]);
+  Future<R?> get<R extends Object>(K key) => run<R>([r'GET', key]);
 }
 
 void main() {
   group('ModuleBase', () {
     test('run', () {
       final module = _DummyModule();
-      expect(module.run<void>(<Object>['TEST']), isNotNull);
+      expect(module.run(<Object>['TEST']), isNotNull);
     });
 
     test('execute', () {

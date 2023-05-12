@@ -1,8 +1,6 @@
 // Copyright (c) 2018, Juan Mellado. All rights reserved. Use of this source
 // is governed by a MIT-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:test/test.dart';
 
 // ignore: directives_ordering
@@ -11,9 +9,9 @@ import 'package:dartis/dartis.dart';
 import '../util.dart' show uuid;
 
 void main() {
-  PubSub<String, String> pubsub;
-  Client client;
-  Commands<String, String> commands;
+  late PubSub<String, String> pubsub;
+  late Client client;
+  late Commands<String, String> commands;
 
   setUp(() async {
     pubsub = await PubSub.connect<String, String>('redis://localhost:6379');

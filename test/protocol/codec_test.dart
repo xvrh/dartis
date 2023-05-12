@@ -1,8 +1,6 @@
 // Copyright (c) 2018, Juan Mellado. All rights reserved. Use of this source
 // is governed by a MIT-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:convert' show utf8;
 
 import 'package:test/test.dart';
@@ -13,15 +11,15 @@ import 'package:dartis/dartis.dart';
 /// A encoder that encodes a [DateTime] to a list of bytes.
 class _DateTimeEncoder extends Encoder<DateTime> {
   @override
-  List<int> convert(DateTime value, [RedisCodec codec]) =>
+  List<int> convert(DateTime value, [RedisCodec? codec]) =>
       utf8.encode(value.toString());
 }
 
 /// A decoder that decodes a server reply to a [DateTime].
 class _DateTimeDecoder extends Decoder<SingleReply, DateTime> {
   @override
-  DateTime convert(SingleReply value, RedisCodec codec) =>
-      value.bytes == null ? null : DateTime.parse(utf8.decode(value.bytes));
+  DateTime? convert(SingleReply value, RedisCodec codec) =>
+      value.bytes == null ? null : DateTime.parse(utf8.decode(value.bytes!));
 }
 
 /// A encoder that encodes a [DateTime] to a list of bytes.
@@ -39,8 +37,8 @@ class _Int999Decoder extends Decoder<SingleReply, int> {
 
 void main() {
   /// Converts an [array] of lists of bytes to a list of replies.
-  List<Reply> _replies(List<List<int>> array) =>
-      array.map((bytes) => StringReply(bytes)).toList();
+  List<Reply> replies(List<List<int>> array) =>
+      array.map(StringReply.new).toList();
 
   group('RedisCodec', () {
     final codec = RedisCodec();
@@ -116,7 +114,7 @@ void main() {
         codec.register(decoder: _Int999Decoder());
 
         expect(codec.decode<int>(const IntReply([49, 50, 51])), equals(999));
-      }, skip: 'Wait for tests to be fully null safe to match types correctly');
+      });
     });
 
     group('encode', () {
@@ -206,14 +204,14 @@ void main() {
       test('List<Reply> to List<String>', () {
         expect(decode<List<String>>(const ArrayReply(null)), isNull);
         expect(
-            decode<List<String>>(ArrayReply(_replies([]))), equals(<String>[]));
+            decode<List<String>>(ArrayReply(replies([]))), equals(<String>[]));
         expect(
-            decode<List<String>>(ArrayReply(_replies([
+            decode<List<String>>(ArrayReply(replies([
               [65, 66, 67]
             ]))),
             equals(['ABC']));
         expect(
-            decode<List<String>>(ArrayReply(_replies([
+            decode<List<String>>(ArrayReply(replies([
               [230, 188, 162],
               [232, 170, 158]
             ]))),
@@ -222,14 +220,14 @@ void main() {
 
       test('List<Reply> to List<int>', () {
         expect(decode<List<int>>(const ArrayReply(null)), isNull);
-        expect(decode<List<int>>(ArrayReply(_replies([]))), equals(<String>[]));
+        expect(decode<List<int>>(ArrayReply(replies([]))), equals(<String>[]));
         expect(
-            decode<List<int>>(ArrayReply(_replies([
+            decode<List<int>>(ArrayReply(replies([
               [49]
             ]))),
             equals([1]));
         expect(
-            decode<List<int>>(ArrayReply(_replies([
+            decode<List<int>>(ArrayReply(replies([
               [50, 53],
               [45, 55]
             ]))),
@@ -239,14 +237,14 @@ void main() {
       test('List<Reply> to List<double>', () {
         expect(decode<List<double>>(const ArrayReply(null)), isNull);
         expect(
-            decode<List<double>>(ArrayReply(_replies([]))), equals(<double>[]));
+            decode<List<double>>(ArrayReply(replies([]))), equals(<double>[]));
         expect(
-            decode<List<double>>(ArrayReply(_replies([
+            decode<List<double>>(ArrayReply(replies([
               [49, 46, 48]
             ]))),
             equals([1.0]));
         expect(
-            decode<List<double>>(ArrayReply(_replies([
+            decode<List<double>>(ArrayReply(replies([
               [50, 53, 46, 56, 57],
               [45, 54, 46, 48, 51],
               [53, 49, 48, 48, 46, 48],

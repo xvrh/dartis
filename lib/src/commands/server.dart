@@ -51,7 +51,7 @@ abstract class ServerCommands<K> {
   /// Gets the current connection name.
   ///
   /// See https://redis.io/commands/client-getname
-  Future<String> clientGetname();
+  Future<String?> clientGetname();
 
   /// Closes a given client connection.
   ///
@@ -190,7 +190,7 @@ abstract class ServerCommands<K> {
   /// stored in RAM.
   ///
   /// See https://redis.io/commands/memory-usage
-  Future<int> memoryUsage(K key, {int? count});
+  Future<int?> memoryUsage(K key, {int? count});
 
   /// Returns the role of the instance in the context of replication.
   ///
@@ -542,7 +542,7 @@ class CommandMapper implements Mapper<List<ClientCommand?>> {
 }
 
 /// A mapper for the CLIENT KILL command.
-class ClientKillMapper implements Mapper<int?> {
+class ClientKillMapper implements Mapper<int> {
   /// Creates a [ClientKillMapper] instance.
   const ClientKillMapper();
 

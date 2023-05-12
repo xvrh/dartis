@@ -45,7 +45,7 @@ abstract class SortedSetCommands<K, V> {
   /// See [zadd] and [zincrby].
   ///
   /// See https://redis.io/commands/zadd
-  Future<double> zaddIncr(K key, double score, V member,
+  Future<double?> zaddIncr(K key, double score, V member,
       {SortedSetExistMode? mode});
 
   /// Returns the cardinality (number of elements) of the sorted set stored
@@ -261,7 +261,7 @@ class SortedSetScanResult<K> {
   final int? cursor;
 
   /// The members with theirs scores.
-  final Map<K, double?>? members;
+  final Map<K?, double?>? members;
 
   /// Creates a [SortedSetScanResult] instance.
   const SortedSetScanResult(this.cursor, this.members);
@@ -272,8 +272,8 @@ class SortedSetScanResult<K> {
 }
 
 /// A mapper for the BZPOPMIN and BZPOPMAX commands.
-class SortedSetPopResultMapper<K, V>
-    implements Mapper<SortedSetPopResult<K?, V?>?> {
+class SortedSetPopResultMapper<K extends Object, V extends Object>
+    implements Mapper<SortedSetPopResult<K?, V?>> {
   @override
   SortedSetPopResult<K?, V?>? map(
       covariant ArrayReply reply, RedisCodec codec) {
@@ -293,13 +293,14 @@ class SortedSetPopResultMapper<K, V>
 }
 
 /// A mapper for the ZSCAN command.
-class SortedSetScanMapper<K> implements Mapper<SortedSetScanResult<K?>> {
+class SortedSetScanMapper<K extends Object>
+    implements Mapper<SortedSetScanResult<K>> {
   @override
-  SortedSetScanResult<K?> map(covariant ArrayReply reply, RedisCodec codec) {
+  SortedSetScanResult<K> map(covariant ArrayReply reply, RedisCodec codec) {
     final cursor = codec.decode<int>(reply.array![0]);
     final members = _mapSet(reply.array![1] as ArrayReply, codec);
 
-    return SortedSetScanResult<K?>(cursor, members);
+    return SortedSetScanResult<K>(cursor, members);
   }
 
   /// Maps a [reply] to a Map<K, double>.
@@ -320,7 +321,7 @@ class SortedSetScanMapper<K> implements Mapper<SortedSetScanResult<K?>> {
 }
 
 /// A mapper to be used with some sorted set commands.
-class SortedSetMapper<V> implements Mapper<Map<V?, double?>?> {
+class SortedSetMapper<V extends Object> implements Mapper<Map<V?, double?>> {
   /// Retrieves the scores.
   final bool withScores;
 
