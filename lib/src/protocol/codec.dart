@@ -21,7 +21,7 @@ abstract class Converter<S extends Object, T extends Object> {
 
   /// Checks if this can converts a [value] into an instance of type [U].
   bool supports<U>(Object value) =>
-      value is S && U == targetType || <U?>[] == <T>[];
+      value is S && U == targetType || U.toString() == '${targetType.toString()}?';
 }
 
 /// A converter that converts an instance of type [S] into a list of bytes.
@@ -39,7 +39,7 @@ abstract class ArrayDecoder<S extends Reply, T extends Object> extends Converter
   /// Checks if this can converts a [value] into an instance of type [List<U>].
   @override
   bool supports<U>(Object? value) {
-    return value != null && value is S && U.toString() == 'List<$T>';
+    return value != null && value is S && U.toString().startsWith('List<$T>');
   }
 }
 
@@ -106,7 +106,7 @@ abstract class _MultiConverter {
 
     "";
     //return value as T;
-    throw RedisException('Unexpected value of type "${value.runtimeType}" to $T.');
+    throw RedisException('Unexpected value of type "${value.runtimeType}" to convert to $T.');
   }
 }
 
@@ -230,7 +230,7 @@ class _ArrayWithNullableReplyDecoder<T extends Object>  extends Converter<ArrayR
   /// Checks if this can converts a [value] into an instance of type [List<U>].
   @override
   bool supports<U>(Object? value) {
-    return value != null && value is ArrayReply && U.toString() == 'List<$T?>';
+    return value != null && value is ArrayReply && U.toString().startsWith('List<$T?>');
   }
 
   @override

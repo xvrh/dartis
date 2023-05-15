@@ -175,13 +175,13 @@ class Client implements CommandRunner {
   /// If the 'fire and forget' mode is currently active then the [Future]
   /// is immediately completed with `null`.
   @override
-  Future<T?> run<T extends Object>(Command<T> command) =>
+  Future<T> run<T>(Command<T> command) =>
       _pipelined ? _delay(command) : _dispatcher.dispatch(command);
 
   /// Closes the connection.
   Future<void> disconnect() => _dispatcher.disconnect();
 
-  Future<T?> _delay<T extends Object>(Command<T> command) {
+  Future<T> _delay<T>(Command<T> command) {
     _delayed.add(command);
 
     return command.future;
@@ -202,7 +202,7 @@ class _ClientDispatcher extends ReplyDispatcher {
   _ClientDispatcher(Connection connection) : super(connection);
 
   /// Sends a [command] to the server.
-  Future<T?> dispatch<T extends Object>(Command<T> command) {
+  Future<T> dispatch<T>(Command<T> command) {
     final bytes = writer.write(command.line, codec);
     send(bytes);
 

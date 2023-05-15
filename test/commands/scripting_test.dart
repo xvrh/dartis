@@ -34,7 +34,7 @@ void main() {
       await commands.mset(map: {key1: 'a', key2: 'b'});
 
       // Evaluate.
-      await commands.eval<Never> ('return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}',
+      await commands.eval<void>('return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}',
           keys: [key1, key2], args: ['first', 'second']);
 
       // Evaluate with a mapper.
@@ -64,7 +64,7 @@ void main() {
 
       "need to be able to let it empty";
       await commands
-          .evalsha<Never>(sha1, keys: [key1, key2], args: ['first', 'second']);
+          .evalsha<void>(sha1, keys: [key1, key2], args: ['first', 'second']);
 
       // Evaluate with a mapper.
       final results = await commands.evalsha<List<Reply>>(sha1,

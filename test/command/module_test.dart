@@ -12,7 +12,7 @@ import '../util.dart' show uuid;
 
 class _DummyRunner implements CommandRunner {
   @override
-  Future<T?> run<T extends Object>(Command<T> command) => command.future;
+  Future<T> run<T>(Command<T> command) => command.future;
 }
 
 class _DummyModule extends ModuleBase {
@@ -22,7 +22,7 @@ class _DummyModule extends ModuleBase {
 class _TypedCommands<K> extends ModuleBase {
   _TypedCommands(Client client) : super(client);
 
-  Future<void> set<R>(K key, R value) => run<Never>([r'SET', key, value]);
+  Future<void> set<R>(K key, R value) => run([r'SET', key, value]);
 
   Future<R?> get<R extends Object>(K key) => run<R>([r'GET', key]);
 }

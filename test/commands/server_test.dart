@@ -175,7 +175,7 @@ void main() {
 
       // Get.
       expect(await commands.debugObject(key), isNotEmpty);
-    });
+    }, skip: "Ne enable-debug-command option");
 
     test('debugSegfault', () async {
       await commands.debugSegfault();

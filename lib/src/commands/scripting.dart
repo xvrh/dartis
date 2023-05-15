@@ -15,7 +15,7 @@ abstract class ScriptingCommands<K> {
   /// object of type [T].
   ///
   /// See https://redis.io/commands/eval
-  Future<T?> eval<T extends Object>(String script,
+  Future<T> eval<T>(String script,
       {Iterable<K> keys = const [],
       Iterable<Object> args = const [],
       Mapper<T>? mapper});
@@ -25,7 +25,7 @@ abstract class ScriptingCommands<K> {
   /// See [eval].
   ///
   /// See https://redis.io/commands/evalsha
-  Future<T?> evalsha<T extends Object>(String sha1,
+  Future<T> evalsha<T>(String sha1,
       {Iterable<K> keys = const [],
       Iterable<Object> args = const [],
       Mapper<T>? mapper});

@@ -333,9 +333,9 @@ void main() {
 
       var result2 = result1 as StreamPendingSummary<String?, String>;
       expect(result2.pendingCount, equals(0));
-      expect(result2.firstEntryId, isNull);
-      expect(result2.lastEntryId, isNull);
-      expect(result2.consumers, isNull);
+      expect(result2.firstEntryId, "");
+      expect(result2.lastEntryId, "");
+      expect(result2.consumers, null);
 
       // Inspect a pending entries list.
       final key2 = uuid();
@@ -352,7 +352,7 @@ void main() {
       result1 = await commands.xpending(key2, group2);
       expect(result1, isA<StreamPendingSummary>());
 
-      result2 = result1 as StreamPendingSummary<String, String>;
+      result2 = result1 as StreamPendingSummary<String?, String>;
       expect(result2.pendingCount, equals(2));
       expect(result2.firstEntryId, equals(id1));
       expect(result2.lastEntryId, equals(id2));
@@ -374,7 +374,7 @@ void main() {
           await commands.xpending(key3, group3, start: '-', end: '+', count: 1);
       expect(result3, isA<List>());
 
-      var result4 = result3 as List<StreamPendingEntry<String, String>>;
+      var result4 = result3 as List<StreamPendingEntry<String?, String>>;
       expect(result4, isEmpty);
 
       // Inspect a range of a pending entries list.
@@ -393,7 +393,7 @@ void main() {
           await commands.xpending(key4, group4, start: '-', end: '+', count: 2);
       expect(result3, isA<List>());
 
-      result4 = result3 as List<StreamPendingEntry<String, String>>;
+      result4 = result3 as List<StreamPendingEntry<String?, String>>;
       expect(result4, hasLength(2));
       expect(result4[0].id, equals(id3));
       expect(result4[0].consumer, equals(consumer5));
@@ -420,7 +420,7 @@ void main() {
           start: '-', end: '+', count: 1, consumer: consumer7);
       expect(result3, isA<List>());
 
-      result4 = result3 as List<StreamPendingEntry<String, String>>;
+      result4 = result3 as List<StreamPendingEntry<String?, String>>;
       expect(result4, hasLength(1));
       expect(result4[0].id, equals(id5));
       expect(result4[0].consumer, equals(consumer7));

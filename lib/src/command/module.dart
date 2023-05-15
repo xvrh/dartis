@@ -10,7 +10,7 @@ import 'command.dart';
 // ignore: one_member_abstracts
 abstract class CommandRunner {
   /// Runs a [command] that returns an object of type [T].
-  Future<T?> run<T extends Object>(Command<T> command);
+  Future<T> run<T>(Command<T> command);
 }
 
 /// Base class for implementing a set of commands.
@@ -44,22 +44,20 @@ abstract class ModuleBase {
 
   /// Runs a Redis command [line], with an optional [mapper] for
   /// processing of the results.
-  Future<T?> run<T extends Object>(Iterable<Object?> line,
+  Future<T> run<T>(Iterable<Object?> line,
       {Mapper<T>? mapper}) async {
     final command = Command<T>(line, mapper: mapper);
 
     return await execute<T>(command);
   }
 
-  Future<T> runNonNull<T extends Object>(Iterable<Object?> line,
-      {Mapper<T>? mapper}) async {
-    final command = Command<T>(line, mapper: mapper);
-
-    return (await run(line, mapper: mapper))!;
+  Future<T> runNonNull<T>(Iterable<Object?> line,
+      {Mapper<T>? mapper}) {
+    return run<T>(line, mapper: mapper);
   }
 
   /// Executes a [command].
-  Future<T?> execute<T extends Object>(Command<T> command) {
+  Future<T> execute<T>(Command<T> command) {
     log.finer(() => 'Running command: $command.');
 
     return _runner.run(command);

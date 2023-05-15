@@ -8,13 +8,13 @@ import '../protocol.dart';
 
 /// A mapper for processing the results of the commands.
 // ignore: one_member_abstracts
-abstract class Mapper<T extends Object> {
+abstract class Mapper<T> {
   /// Maps a Redis server [reply] to an object of type [T].
   T? map(Reply reply, RedisCodec codec);
 }
 
 /// A Redis command that completes with a value of type [T].
-abstract class Command<T extends Object> {
+abstract class Command<T> {
   /// Creates a [Command] instance for a given command [line] and an
   /// optional [mapper] for processing of the results.
   factory Command(Iterable<Object?> line, {Mapper<T>? mapper}) =>
@@ -24,7 +24,7 @@ abstract class Command<T extends Object> {
   Iterable<Object> get line;
 
   /// Returns the [future] that is completed by this command.
-  Future<T?> get future;
+  Future<T> get future;
 
   /// Completes this command with the given [reply].
   void complete(Reply reply, RedisCodec codec);
@@ -37,8 +37,8 @@ abstract class Command<T extends Object> {
 }
 
 /// Base class for implementing commands.
-class CommandBase<T extends Object> implements Command<T> {
-  final Completer<T?> _completer = Completer<T?>();
+class CommandBase<T> implements Command<T> {
+  final Completer<T> _completer = Completer<T>();
 
   /// The original command line.
   final Iterable<Object> _line;
@@ -58,7 +58,7 @@ class CommandBase<T extends Object> implements Command<T> {
   Iterable<Object> get line => _line;
 
   @override
-  Future<T?> get future => _completer.future;
+  Future<T> get future => _completer.future;
 
   @override
   void complete(Reply reply, RedisCodec codec) {
@@ -99,19 +99,19 @@ class CommandBase<T extends Object> implements Command<T> {
 }
 
 /// The MULTI command.
-class MultiCommand extends CommandBase<Never> {
+class MultiCommand extends CommandBase<void> {
   /// Creates a [MultiCommand] instance.
   MultiCommand(Iterable<Object> line) : super(line);
 }
 
 /// The EXEC command.
-class ExecCommand extends CommandBase<Never> {
+class ExecCommand extends CommandBase<void> {
   /// Creates a [ExecCommand] instance.
   ExecCommand(Iterable<Object> line) : super(line);
 }
 
 /// The DISCARD command.
-class DiscardCommand extends CommandBase<Never> {
+class DiscardCommand extends CommandBase<void> {
   /// Creates a [DiscardCommand] instance.
   DiscardCommand(Iterable<Object> line) : super(line);
 }
@@ -119,7 +119,7 @@ class DiscardCommand extends CommandBase<Never> {
 /// The CLIENT REPLY command.
 ///
 /// Stores the specified server reply mode.
-class ClientReplyCommand<T extends Object> extends CommandBase<T> {
+class ClientReplyCommand<T> extends CommandBase<T> {
   /// The specified server reply [mode] for this command.
   final ReplyMode mode;
 

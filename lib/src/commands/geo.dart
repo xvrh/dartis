@@ -33,7 +33,7 @@ abstract class GeoCommands<K, V> {
   /// stored at [key] as standard geohash strings.
   ///
   /// See https://redis.io/commands/geohash
-  Future<List<String>?> geohash(K key,
+  Future<List<String?>?> geohash(K key,
       {V? member, Iterable<V> members = const []});
 
   /// Returns the positions (longitude, latitude) of all the specified members
@@ -195,7 +195,7 @@ class GeoPositionMapper implements Mapper<List<GeoPosition?>> {
   @override
   List<GeoPosition?> map(covariant ArrayReply reply, RedisCodec codec) =>
       reply.array!
-          .map((value) => _mapPosition(value as ArrayReply, codec))
+          .map((value) => value is NullReply ? null : _mapPosition(value as ArrayReply, codec))
           .toList();
 
   /// Maps a [reply] to `null` or a [GeoPosition] instance.
