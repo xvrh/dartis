@@ -133,10 +133,10 @@ class Transaction {
   }
 
   /// Completes the queued commands.
-  void _dequeueAll(List<Reply> array, RedisCodec codec) {
+  void _dequeueAll(List<Reply?> array, RedisCodec codec) {
     for (var i = 0; i < _queued.length; i++) {
       final command = _queued[i];
-      final reply = array[i];
+      final reply = array[i]!;
 
       if (reply is ErrorReply) {
         command.completeErrorReply(reply, codec);

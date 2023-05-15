@@ -36,14 +36,14 @@ abstract class PubSubEventType {
 abstract class PubSubEvent {}
 
 /// An event emitted when a command is performed on a channel.
-class SubscriptionEvent<K> implements PubSubEvent {
+class SubscriptionEvent<K extends Object> implements PubSubEvent {
   /// The name of the command that caused this event.
   ///
   /// See [PubSubEventType].
   final String? command;
 
   /// The name of the channel affected by this event.
-  final K channel;
+  final K? channel;
 
   /// The number of channels that the client is currently subscribed to.
   final int? channelCount;
@@ -57,12 +57,12 @@ class SubscriptionEvent<K> implements PubSubEvent {
 }
 
 /// An event emitted when a message is published on a channel.
-class MessageEvent<K, V> implements PubSubEvent {
+class MessageEvent<K extends Object, V extends Object> implements PubSubEvent {
   /// The name of the channel where the message was published.
-  final K channel;
+  final K? channel;
 
   /// The message content.
-  final V message;
+  final V? message;
 
   /// The original pattern matching the name of the channel, if any.
   final K? pattern;
@@ -76,9 +76,9 @@ class MessageEvent<K, V> implements PubSubEvent {
 }
 
 /// An event emitted in response to a PING command.
-class PongEvent<V> implements PubSubEvent {
+class PongEvent<V extends Object> implements PubSubEvent {
   /// The message content.
-  final V message;
+  final V? message;
 
   /// Creates a [PongEvent] instance.
   const PongEvent(this.message);
@@ -113,7 +113,7 @@ class PongEvent<V> implements PubSubEvent {
 /// See [SubscriptionEvent], [MessageEvent] and [PongEvent].
 ///
 /// See `pubsub.dart` in the `example` folder.
-class PubSub<K, V> {
+class PubSub<K extends Object, V extends Object> {
   final _PubSubDispatcher<K, V> _dispatcher;
 
   /// Creates a [PubSub] instance with the given [connection].
@@ -132,7 +132,8 @@ class PubSub<K, V> {
   ///
   /// Returns a [Future] that will complete with either a [PubSub] once
   /// connected or an error if the connection failed.
-  static Future<PubSub<K, V>> connect<K, V>(String connectionString) async {
+  static Future<PubSub<K, V>> connect<K extends Object, V extends Object>(
+      String connectionString) async {
     final connection = await Connection.connect(connectionString);
 
     return PubSub<K, V>(connection);
@@ -191,7 +192,8 @@ class PubSub<K, V> {
 }
 
 /// A dispatcher for a client in Publish/Subscribe mode.
-class _PubSubDispatcher<K, V> extends ReplyDispatcher {
+class _PubSubDispatcher<K extends Object, V extends Object>
+    extends ReplyDispatcher {
   final StreamController<PubSubEvent> _controller =
       StreamController<PubSubEvent>.broadcast();
 
@@ -250,32 +252,32 @@ class _PubSubDispatcher<K, V> extends ReplyDispatcher {
     throw RedisException('Unexpected server reply type "$type".');
   }
 
-  PubSubEvent _onSubscription(List<Reply> array) {
+  PubSubEvent _onSubscription(List<Reply?> array) {
     final command = codec.decode<String>(array[0]);
     final channel = codec.decode<K>(array[1]);
     final channelCount = codec.decode<int>(array[2]);
 
-    return SubscriptionEvent<K?>(command, channel, channelCount);
+    return SubscriptionEvent<K>(command, channel, channelCount);
   }
 
-  PubSubEvent _onMessage(List<Reply> array) {
+  PubSubEvent _onMessage(List<Reply?> array) {
     final channel = codec.decode<K>(array[1]);
     final message = codec.decode<V>(array[2]);
 
-    return MessageEvent<K?, V?>(channel, message);
+    return MessageEvent<K, V>(channel, message);
   }
 
-  PubSubEvent _onPmessage(List<Reply> array) {
+  PubSubEvent _onPmessage(List<Reply?> array) {
     final pattern = codec.decode<K>(array[1]);
     final channel = codec.decode<K>(array[2]);
     final message = codec.decode<V>(array[3]);
 
-    return MessageEvent<K?, V?>(channel, message, pattern);
+    return MessageEvent<K, V>(channel, message, pattern);
   }
 
-  PubSubEvent _onPong(List<Reply> array) {
+  PubSubEvent _onPong(List<Reply?> array) {
     final message = codec.decode<V>(array[1]);
 
-    return PongEvent<V?>(message);
+    return PongEvent<V>(message);
   }
 }
