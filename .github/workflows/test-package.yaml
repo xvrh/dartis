@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      - name: Install redis
+        run: sudo apt-get install -y redis-tools redis-server
+      - name: Verify that redis is up
+        run: redis-cli ping
+      - name: Install dependencies
+        run: dart pub get
+      - name: Analyze code
+        run: dart analyze --fatal-infos
+        if: always()
+      - name: Run tests
+        run: dart test
+        if: always()
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+        if: always()
