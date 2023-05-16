@@ -13,7 +13,7 @@ jobs:
         with:
           sdk: 'stable'
       - name: Install redis
-        run: sudo apt-get install -y redis-tools redis-server
+        run: sudo snap install redis
       - run: redis-server --version
       - name: Verify that redis is up
         run: redis-cli ping
