@@ -13,18 +13,19 @@ jobs:
         with:
           sdk: 'stable'
       - name: Install redis
-        run: sudo snap install redis
+        run: sudo apt-get install -y redis-tools redis-server
       - run: redis-server --version
       - name: Verify that redis is up
         run: redis-cli ping
-      - name: Install dependencies
+      - id: install
+        name: Install dependencies
         run: dart pub get
       - name: Analyze code
         run: dart analyze --fatal-infos
-        if: always()
+        if: always() && steps.install.outcome == 'success'
       - name: Run tests
         run: dart test
-        if: always()
+        if: always() && steps.install.outcome == 'success'
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
-        if: always()
+        if: always() && steps.install.outcome == 'success'
